@@ -1,5 +1,19 @@
 module;
 
-module analyzer:parser;
+export module analyzer:parser;
 
-class parser {};
+import :tokenizer;
+import :ast;
+
+export namespace tomedb
+{
+class parser
+{
+public:
+  parser(const tokenizer &tokenizer) : tokenizer_(tokenizer) {};
+  auto parse() -> ast { return ast{}; }
+
+private:
+  tokenizer tokenizer_;
+};
+} // namespace tomedb

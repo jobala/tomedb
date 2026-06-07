@@ -1,8 +1,8 @@
 include(AddGoogleTest)
 
-add_executable(analyzer_test analyzer_test.cpp)
+add_executable(query_processing_test query_processing_test.cpp)
 
-target_link_libraries(analyzer_test PRIVATE gtest GTest::gtest_main analyzer)
+target_link_libraries(query_processing_test PRIVATE gtest GTest::gtest_main  db)
 
 include(GoogleTest)
-gtest_discover_tests(analyzer_test)
+gtest_discover_tests(query_processing_test)
