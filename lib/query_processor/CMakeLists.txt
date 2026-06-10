@@ -6,4 +6,5 @@ target_sources(query_processor
 PUBLIC
 FILE_SET CXX_MODULES FILES
 statement.cpp
+query_processor.cpp
 )

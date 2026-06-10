@@ -43,6 +43,7 @@ endif()
 enable_testing()
 
 
+add_subdirectory(lib/query_processor)
 add_subdirectory(lib/db)
 add_subdirectory(test)
 

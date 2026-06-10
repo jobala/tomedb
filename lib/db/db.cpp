@@ -4,13 +4,16 @@ module;
 
 export module db;
 
-export namespace tomedb
-{
+export import :collection;
 
-class db
+export namespace tome
 {
-public:
-  auto collection(std::string collection_name) -> std::string { return collection_name; };
+struct db
+{
+  auto collection(const std::string &collection_name) -> collection
+  {
+    struct collection coll{collection_name};
+    return coll;
+  };
 };
-
-} // namespace tomedb
+} // namespace tome
