@@ -5,16 +5,13 @@ import db;
 TEST(query_processing, insert_query)
 {
   tome::db library{};
-  tome::document book{{"author", "ngugi wa thiong'o"}};
+  tome::document book = {{"author", "ngugi wa thiong'o"}};
 
   auto books = library.collection("books");
   auto explanation = books.explain_insert(book);
 
-  // insert first generates the insert statement which will be coverted to a logical plan.
-  // if explain is true, it prints the logical plan
-  // otherwise, it executes the plan
-  //   auto plan = books.insert(book, true);
-  ASSERT_EQ("mansplaining", explanation);
+  const auto result = "collection(books)\n\tdocument: {\"author\":\"ngugi wa thiong'o\"}";
+  ASSERT_EQ(result, explanation);
 }
 
 TEST(query_processing, find_query) {}

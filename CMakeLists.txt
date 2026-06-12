@@ -14,7 +14,7 @@ if(APPLE)
   set(CMAKE_C_ARCHIVE_FINISH "<CMAKE_RANLIB> <TARGET>")
 endif()
 
-project(jack VERSION 0.1 LANGUAGES CXX)
+project(tome VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -40,6 +40,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
   add_compile_options(-Wall -Wextra -Wpedantic -Werror -Wno-missing-field-initializers)
 endif()
 
+include(add_json)
 enable_testing()
 
 

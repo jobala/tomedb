@@ -1,14 +1,16 @@
 module;
 
-#include <any>
+#include <format>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <unordered_map>
 
 export module query_processor:statement;
 
-namespace tomedb
+namespace tome
 {
-using document = std::unordered_map<std::string, std::any>;
+using json = nlohmann::json;
+export using document = std::unordered_map<std::string, json>;
 
 struct logical_expr
 {
@@ -16,18 +18,23 @@ struct logical_expr
 
 struct statement
 {
-  virtual logical_expr build_plan() = 0;
+  virtual std::string explain() = 0;
+  virtual void execute() = 0;
 };
 
 export struct insert_statement : public statement
 {
   insert_statement(const std::string &collection, document &doc) : collection_(collection), document_(doc) {}
 
-  auto build_plan() -> logical_expr override { return logical_expr{}; }
+  auto explain() -> std::string override
+  {
+    return std::format("collection({})\n\tdocument: {}", collection_, document_.dump());
+  }
+
+  auto execute() -> void override {}
 
 private:
   std::string collection_;
-  std::unordered_map<std::string, std::any> document_;
+  json document_;
 };
-
-} // namespace tomedb
+} // namespace tome
