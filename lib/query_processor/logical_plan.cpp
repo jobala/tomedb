@@ -1,17 +1,34 @@
 module;
-#include <any>
+#include <memory>
 #include <string>
-#include <unordered_map>
 #include <variant>
-module query_processor:logical_plan;
+#include <vector>
+export module query_processor:logical_plan;
+
+import :logical_expr;
 
 namespace tome
 {
-struct insert
+struct scan;
+struct selection;
+struct projection;
+
+export using logical_plan = std::variant<scan, selection, projection>;
+
+struct scan
 {
-  std::string collection_;
-  std::unordered_map<std::string, std::any> values_;
+  std::string collection;
 };
 
-using logical_plan = std::variant<insert>;
+struct selection
+{
+  std::unique_ptr<logical_plan> child;
+  logical_expr expr;
+};
+
+struct projection
+{
+  std::vector<std::string> fields;
+  std::unique_ptr<logical_plan> child;
+};
 } // namespace tome

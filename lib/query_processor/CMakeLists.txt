@@ -9,4 +9,5 @@ FILE_SET CXX_MODULES FILES
 statement.cpp
 query_processor.cpp
 logical_plan.cpp
+logical_expr.cpp
 )
