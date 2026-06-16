@@ -5,7 +5,7 @@ module;
 #include <vector>
 export module query_processor:logical_plan;
 
-import :logical_expr;
+import :expr;
 
 namespace tome
 {
@@ -23,7 +23,7 @@ struct scan
 struct selection
 {
   std::unique_ptr<logical_plan> child;
-  logical_expr expr;
+  expr predicate;
 };
 
 struct projection

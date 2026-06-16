@@ -10,7 +10,7 @@ module;
 export module query_processor:statement;
 
 import :logical_plan;
-import :logical_expr;
+import :expr;
 
 namespace tome
 {
@@ -67,7 +67,7 @@ private:
 
     if (query_.filter.has_value())
     {
-      plan = selection{.child = std::make_unique<logical_plan>(std::move(plan))};
+      plan = selection{.child = std::make_unique<logical_plan>(std::move(plan)), .predicate = build_predicate()};
     }
 
     if (query_.projection.has_value())
@@ -77,6 +77,8 @@ private:
 
     return plan;
   }
+
+  auto build_predicate() -> expr { return binary_expr{}; }
 
   std::string collection_;
   query query_;
