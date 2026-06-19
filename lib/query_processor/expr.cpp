@@ -66,6 +66,7 @@ struct predicate_parser
     {
       const auto &op = key;
       std::vector<std::unique_ptr<expr>> children{};
+      // TODO: collate all the children
       return logical_expr{.op = op, .children = std::move(children)};
     }
 

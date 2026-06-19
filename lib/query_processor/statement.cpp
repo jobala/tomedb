@@ -6,6 +6,7 @@ module;
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
+#include <variant>
 
 export module query_processor:statement;
 
@@ -53,9 +54,8 @@ export struct find_statement : public statement
 
   auto explain() -> std::string override
   {
-    // auto plan = build_plan();
-    // return plan.explain();
-    return "";
+    auto plan = build_plan();
+    return std::visit(explainer_, plan);
   }
 
   auto execute() -> void override { throw std::runtime_error("not implemented"); }
@@ -82,5 +82,6 @@ private:
 
   std::string collection_;
   query query_;
+  explainer explainer_;
 };
 } // namespace tome

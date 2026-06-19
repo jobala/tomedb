@@ -25,9 +25,9 @@ TEST(query_processing, find_query)
   // query find_by_title_and_author{{"title", "dan brown"}};
   // query find_by_title_or_author{{"title", "dan brown"}};
   // query find_by_age_comparison{{"title", "dan brown"}};
-  //
+
   auto explanation = books.explain_find(find_by_title);
-  ASSERT_EQ("", explanation);
+  ASSERT_EQ("filter()\n\tscan(books)", explanation);
 }
 
 TEST(query_processing, update_query) {}
