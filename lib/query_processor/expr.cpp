@@ -45,7 +45,7 @@ struct logical_expr
 
 struct predicate_parser
 {
-  expr operator()(const json &doc) const
+  auto operator()(const json &doc) const -> expr
   {
     auto doc_iter = doc.begin();
     const auto &key = doc_iter.key();

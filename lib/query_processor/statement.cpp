@@ -15,7 +15,7 @@ import :expr;
 namespace tome
 {
 
-struct statement
+export struct statement
 {
   virtual std::string explain() = 0;
   virtual void execute() = 0;

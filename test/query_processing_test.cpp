@@ -8,7 +8,7 @@ TEST(query_processing, insert_query)
   tome::document book = {{"author", "ngugi wa thiong'o"}};
 
   auto books = library.collection("books");
-  auto explanation = books.explain_insert(book);
+  auto explanation = books.insert(book)->explain();
 
   const auto result = "collection(books)\n\tdocument: {\"author\":\"ngugi wa thiong'o\"}";
   ASSERT_EQ(result, explanation);
@@ -26,7 +26,7 @@ TEST(query_processing, find_query)
   // query find_by_title_or_author{{"title", "dan brown"}};
   // query find_by_age_comparison{{"title", "dan brown"}};
 
-  auto explanation = books.explain_find(find_by_title);
+  auto explanation = books.find(find_by_title)->explain();
   ASSERT_EQ("filter()\n\tscan(books)", explanation);
 }
 

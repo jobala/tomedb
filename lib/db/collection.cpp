@@ -1,5 +1,6 @@
 module;
 
+#include <memory>
 #include <string>
 
 export module db:collection;
@@ -11,16 +12,14 @@ struct collection
 {
   collection(const std::string &name) : name_(name) {}
 
-  auto explain_insert(tome::document &doc) -> std::string
+  auto insert(tome::document &doc) -> std::unique_ptr<tome::statement>
   {
-    tome::insert_statement statement(this->name_, doc);
-    return statement.explain();
+    return std::make_unique<tome::insert_statement>(this->name_, doc);
   }
 
-  auto explain_find(const query &query) -> std::string
+  auto find(const query &query) -> std::unique_ptr<tome::statement>
   {
-    tome::find_statement statement(this->name_, query);
-    return statement.explain();
+    return std::make_unique<tome::find_statement>(this->name_, query);
   }
 
 private:
