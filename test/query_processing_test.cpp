@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 import db;
+import types;
 
 TEST(query_processing, insert_query)
 {
@@ -19,12 +20,7 @@ TEST(query_processing, find_query)
   tome::db library{};
   tome::document book = {{"author", "dan brown"}, {"title", "inferno"}, {"age", 10}};
   auto books = library.collection("books");
-
   std::string explanation;
-
-  // TODO: normalize query into a standard form
-  // query find_by_title_and_author{{"title", "dan brown"}};
-  // query find_by_title_or_author{{"title", "dan brown"}};
 
   tome::query find_by_title{.filter = tome::document{{"title", "inferno"}}};
   explanation = books.find(find_by_title)->explain();
@@ -33,6 +29,14 @@ TEST(query_processing, find_query)
   tome::query find_by_age_comparison{.filter = tome::document{{"age", {{"$gt", 5}}}}};
   explanation = books.find(find_by_age_comparison)->explain();
   ASSERT_EQ("filter(age>5)\n\tscan(books)", explanation);
+
+  tome::query find_by_title_and_author{.filter = tome::document{{"$and",
+                                                                 {
+                                                                     {{"title", "inferno"}},
+                                                                     {{"author", "dan brown"}},
+                                                                 }}}};
+  explanation = books.find(find_by_title_and_author)->explain();
+  ASSERT_EQ("filter((title=\"inferno\") and (author=\"dan brown\"))\n\tscan(books)", explanation);
 }
 
 TEST(query_processing, update_query) {}

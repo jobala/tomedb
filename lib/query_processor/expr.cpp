@@ -68,7 +68,11 @@ struct predicate_parser
     {
       const auto &op = key;
       std::vector<std::unique_ptr<expr>> children{};
-      // TODO: collate all the children
+      for (const auto &child : value)
+      {
+        auto child_expr = this->operator()(child);
+        children.push_back(std::make_unique<expr>(std::move(child_expr)));
+      }
       return logical_expr{.op = op, .children = std::move(children)};
     }
 
@@ -118,11 +122,16 @@ export struct expr_printer
     for (const auto &child : logical_expr.children)
     {
       auto printed_child = std::visit(*this, *child);
-      res += std::format("{} ({})", op, printed_child);
+      res += std::format(" {} ({})", op, printed_child);
+    }
+
+    if (res.empty())
+    {
+      return "";
     }
 
     // remove trailing operator
-    return res.substr(op.length() + 1);
+    return res.substr(op.length() + 2);
   }
 
   auto operator()(const literal_expr &literal_expr) const -> std::string { return literal_expr.value.dump(); }
