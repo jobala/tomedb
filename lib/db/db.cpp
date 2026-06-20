@@ -1,15 +1,14 @@
 module;
 
-#include <nlohmann/json.hpp>
 #include <string>
 
 export module db;
 
 export import :collection;
+export import types;
 
 export namespace tome
 {
-using document = std::unordered_map<std::string, nlohmann::json>;
 
 struct db
 {

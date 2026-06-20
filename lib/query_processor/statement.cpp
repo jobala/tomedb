@@ -2,28 +2,18 @@ module;
 
 #include <format>
 #include <memory>
-#include <nlohmann/json.hpp>
 #include <stdexcept>
 #include <string>
-#include <unordered_map>
 #include <variant>
 
 export module query_processor:statement;
 
+export import types;
 import :logical_plan;
 import :expr;
 
 namespace tome
 {
-using json = nlohmann::json;
-export using document = std::unordered_map<std::string, json>;
-
-// TODO: move query to types module to avoid duplication
-export struct query
-{
-  std::optional<document> filter;
-  std::optional<document> projection;
-};
 
 struct statement
 {

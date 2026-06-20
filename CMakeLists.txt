@@ -44,6 +44,7 @@ include(add_json)
 enable_testing()
 
 
+add_subdirectory(lib/types)
 add_subdirectory(lib/query_processor)
 add_subdirectory(lib/db)
 add_subdirectory(test)

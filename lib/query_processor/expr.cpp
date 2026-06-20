@@ -1,18 +1,17 @@
 module;
 
 #include <memory>
-#include <nlohmann/json.hpp>
 #include <string>
 #include <utility>
 #include <variant>
-#include <vector>
 
 export module query_processor:expr;
+
+import types;
 
 namespace tome
 {
 
-using json = nlohmann::json;
 struct binary_expr;
 struct logical_expr;
 struct field_expr;

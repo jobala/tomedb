@@ -36,15 +36,17 @@ struct projection
 struct explainer
 {
   auto operator()(const scan &scan) const -> std::string { return std::format("scan({})", scan.collection); }
+
   auto operator()(const selection &selection) const -> std::string
   {
     auto child = std::visit(*this, *selection.child);
     return std::format("filter()\n\t{}", child);
   }
+
   auto operator()(const projection &projection) const -> std::string
   {
     auto child = std::visit(*this, *projection.child);
-    return std::format("projection () \n\t{}", child);
+    return std::format("projection()\n\t{}", child);
   }
 };
 } // namespace tome
