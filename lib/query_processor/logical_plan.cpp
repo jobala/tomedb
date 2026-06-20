@@ -47,7 +47,19 @@ struct explainer
   auto operator()(const projection &projection) const -> std::string
   {
     auto child = std::visit(*this, *projection.child);
-    return std::format("projection()\n\t{}", child);
+    std::string fields;
+
+    for (const auto &field : projection.fields)
+    {
+      fields = std::format(",{}", field);
+    }
+
+    if (!fields.empty())
+    {
+      fields = fields.substr(1);
+    }
+
+    return std::format("projection({})\n\t{}", fields, child);
   }
 
 private:

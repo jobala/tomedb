@@ -4,6 +4,7 @@ module;
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <variant>
 
 export module query_processor:statement;
@@ -62,7 +63,14 @@ private:
 
     if (query_.projection.has_value())
     {
-      plan = projection{.child = std::make_unique<logical_plan>(std::move(plan))};
+      std::vector<std::string> fields{};
+
+      for (const auto &field : query_.projection.value())
+      {
+        fields.push_back(field);
+      }
+
+      plan = projection{.fields = std::move(fields), .child = std::make_unique<logical_plan>(std::move(plan))};
     }
 
     return plan;

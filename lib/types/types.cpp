@@ -13,6 +13,6 @@ using document = std::unordered_map<std::string, json>;
 struct query
 {
   std::optional<document> filter;
-  std::optional<document> projection;
+  std::optional<json> projection;
 };
 }; // namespace tome

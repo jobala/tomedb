@@ -1,4 +1,6 @@
+#include <exception>
 #include <gtest/gtest.h>
+#include <iostream>
 
 import db;
 import types;
@@ -37,7 +39,25 @@ TEST(query_processing, find_query)
                                                                  }}}};
   explanation = books.find(find_by_title_and_author)->explain();
   ASSERT_EQ("filter((title=\"inferno\") and (author=\"dan brown\"))\n\tscan(books)", explanation);
+
+  tome::query find_with_projection{
+      .filter = tome::document{{"$and",
+                                {
+                                    {{"title", "inferno"}},
+                                    {{"author", "dan brown"}},
+                                }}},
+      .projection = tome::json{"title"},
+  };
+
+  explanation = books.find(find_with_projection)->explain();
+  ASSERT_EQ("projection(titles)\n\tfilter((title=\"inferno\") and (author=\"dan brown\"))\n\tscan(books)", explanation);
 }
 
-TEST(query_processing, update_query) {}
+TEST(query_processing, update_query)
+{
+  tome::db library{};
+  tome::document book = {{"author", "dan brown"}, {"title", "inferno"}, {"age", 10}};
+  auto books = library.collection("books");
+}
+
 TEST(query_processing, delete_query) {}
