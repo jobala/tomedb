@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 4.2)
 
 if(APPLE)
-    # Point to Homebrew LLVM's clang++ which includes scanning tools
-    set(CMAKE_CXX_COMPILER "/opt/homebrew/opt/llvm/bin/clang++")
-    set(CMAKE_C_COMPILER "/opt/homebrew/opt/llvm/bin/clang")
+  # Point to Homebrew LLVM's clang++ which includes scanning tools
+  set(CMAKE_CXX_COMPILER "/opt/homebrew/opt/llvm/bin/clang++")
+  set(CMAKE_C_COMPILER "/opt/homebrew/opt/llvm/bin/clang")
   set(CMAKE_AR "/opt/homebrew/opt/llvm/bin/llvm-ar" CACHE FILEPATH "" FORCE)
   set(CMAKE_RANLIB "/opt/homebrew/opt/llvm/bin/llvm-ranlib" CACHE FILEPATH "" FORCE)
   set(CMAKE_CXX_COMPILER_AR "/opt/homebrew/opt/llvm/bin/llvm-ar" CACHE FILEPATH "" FORCE)
