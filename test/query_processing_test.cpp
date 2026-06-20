@@ -50,7 +50,7 @@ TEST(query_processing, find_query)
   };
 
   explanation = books.find(find_with_projection)->explain();
-  ASSERT_EQ("projection(titles)\n\tfilter((title=\"inferno\") and (author=\"dan brown\"))\n\tscan(books)", explanation);
+  ASSERT_EQ("projection(title)\n\tfilter((title=\"inferno\") and (author=\"dan brown\"))\n\tscan(books)", explanation);
 }
 
 TEST(query_processing, update_query)
