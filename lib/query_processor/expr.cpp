@@ -85,11 +85,17 @@ export struct expr_printer
 {
   auto operator()(const binary_expr &binary_expr) const -> std::string
   {
+    std::string op;
     auto left = std::visit(*this, *binary_expr.left);
     auto right = std::visit(*this, *binary_expr.right);
-    auto op = binary_expr.op;
+    op = binary_expr.op;
 
-    return std::format("{}{}{}", left, symbol_map.at(op), right);
+    auto it = symbol_map.find(op);
+    if (it != symbol_map.end())
+    {
+      op = it->second;
+    }
+    return std::format("{}{}{}", left, op, right);
   }
 
   auto operator()(const logical_expr &logical_expr) const -> std::string
@@ -119,12 +125,11 @@ export struct expr_printer
     return res.substr(op.length() + 1);
   }
 
-  auto operator()(const literal_expr &literal_expr) const -> std::string { return literal_expr.value; }
+  auto operator()(const literal_expr &literal_expr) const -> std::string { return literal_expr.value.dump(); }
   auto operator()(const field_expr &field_expr) const -> std::string { return field_expr.field; }
 
 private:
-  std::unordered_map<std::string, std::string> symbol_map{
-      {"$eq", "="}, {"$ne", "!="}, {"$gt", ">"}, {"$lt", "<"}, {"$lte", "<="}, {"$gte", ">="},
-  };
+  std::unordered_map<std::string, std::string> symbol_map{{"$eq", "="},   {"$ne", "!="}, {"$gt", ">"},
+                                                          {"$gte", ">="}, {"$lt", "<"},  {"$lte", "<="}};
 };
 } // namespace tome
