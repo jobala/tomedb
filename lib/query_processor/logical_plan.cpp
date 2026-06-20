@@ -40,7 +40,8 @@ struct explainer
   auto operator()(const selection &selection) const -> std::string
   {
     auto child = std::visit(*this, *selection.child);
-    return std::format("filter()\n\t{}", child);
+    auto expressions = std::visit(print_, selection.predicate);
+    return std::format("filter({})\n\t{}", expressions, child);
   }
 
   auto operator()(const projection &projection) const -> std::string
@@ -48,5 +49,8 @@ struct explainer
     auto child = std::visit(*this, *projection.child);
     return std::format("projection()\n\t{}", child);
   }
+
+private:
+  expr_printer print_;
 };
 } // namespace tome

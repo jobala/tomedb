@@ -20,14 +20,14 @@ TEST(query_processing, find_query)
   tome::document book = {{"author", "dan brown"}, {"title", "inferno"}, {"age", 10}};
   auto books = library.collection("books");
 
-  tome::query find_by_title{.filter = tome::document{{"title", "dan brown"}}};
+  tome::query find_by_title{.filter = tome::document{{"title", "inferno"}}};
 
   // query find_by_title_and_author{{"title", "dan brown"}};
   // query find_by_title_or_author{{"title", "dan brown"}};
   // query find_by_age_comparison{{"title", "dan brown"}};
 
   auto explanation = books.find(find_by_title)->explain();
-  ASSERT_EQ("filter()\n\tscan(books)", explanation);
+  ASSERT_EQ("filter(title=inferno)\n\tscan(books)", explanation);
 }
 
 TEST(query_processing, update_query) {}

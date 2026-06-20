@@ -1,7 +1,10 @@
 module;
 
+#include <format>
 #include <memory>
+#include <stdexcept>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <variant>
 
@@ -70,9 +73,58 @@ struct predicate_parser
     }
 
     field_expr json_field{.field = key};
-    return binary_expr{.op = "eq",
+    literal_expr json_value{.value = value};
+
+    return binary_expr{.op = "$eq",
                        .left = std::make_unique<expr>(std::move(json_field)),
-                       .right = std::make_unique<expr>(std::move(json_field))};
+                       .right = std::make_unique<expr>(std::move(json_value))};
   }
+};
+
+export struct expr_printer
+{
+  auto operator()(const binary_expr &binary_expr) const -> std::string
+  {
+    auto left = std::visit(*this, *binary_expr.left);
+    auto right = std::visit(*this, *binary_expr.right);
+    auto op = binary_expr.op;
+
+    return std::format("{}{}{}", left, symbol_map.at(op), right);
+  }
+
+  auto operator()(const logical_expr &logical_expr) const -> std::string
+  {
+    std::string op;
+    if (logical_expr.op == "$and")
+    {
+      op = "and";
+    }
+    else if (logical_expr.op == "$or")
+    {
+      op = "or";
+    }
+    else
+    {
+      throw std::runtime_error("unsupported operator");
+    }
+
+    std::string res;
+    for (const auto &child : logical_expr.children)
+    {
+      auto printed_child = std::visit(*this, *child);
+      res += std::format("{} ({})", op, printed_child);
+    }
+
+    // remove trailing operator
+    return res.substr(op.length() + 1);
+  }
+
+  auto operator()(const literal_expr &literal_expr) const -> std::string { return literal_expr.value; }
+  auto operator()(const field_expr &field_expr) const -> std::string { return field_expr.field; }
+
+private:
+  std::unordered_map<std::string, std::string> symbol_map{
+      {"$eq", "="}, {"$ne", "!="}, {"$gt", ">"}, {"$lt", "<"}, {"$lte", "<="}, {"$gte", ">="},
+  };
 };
 } // namespace tome

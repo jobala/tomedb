@@ -57,7 +57,7 @@ private:
 
     if (query_.filter.has_value())
     {
-      plan = selection{.child = std::make_unique<logical_plan>(std::move(plan)), .predicate = build_predicate()};
+      plan = selection{.child = std::make_unique<logical_plan>(std::move(plan)), .predicate = parse_(query_.filter)};
     }
 
     if (query_.projection.has_value())
@@ -68,10 +68,9 @@ private:
     return plan;
   }
 
-  auto build_predicate() -> expr { return binary_expr{}; }
-
   std::string collection_;
   query query_;
   explainer explainer_;
+  predicate_parser parse_;
 };
 } // namespace tome
