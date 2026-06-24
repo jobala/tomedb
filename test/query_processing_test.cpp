@@ -1,6 +1,4 @@
-#include <exception>
 #include <gtest/gtest.h>
-#include <iostream>
 
 import db;
 import types;
@@ -58,6 +56,22 @@ TEST(query_processing, update_query)
   tome::db library{};
   tome::document book = {{"author", "dan brown"}, {"title", "inferno"}, {"age", 10}};
   auto books = library.collection("books");
+
+  tome::json filter{{"author", "dan brown"}};
+  tome::json data{{"$set", {{"age", 20}}}};
+
+  auto explanation = books.update(filter, data)->explain();
+  ASSERT_EQ("update(books)\n\tfilter(author=\"dan brown\")\n\tscan(books)", explanation);
 }
 
-TEST(query_processing, delete_query) {}
+TEST(query_processing, delete_query)
+{
+  tome::db library{};
+  tome::document book = {{"author", "dan brown"}, {"title", "inferno"}, {"age", 10}};
+  auto books = library.collection("books");
+
+  tome::json filter{{"author", "dan brown"}};
+
+  auto explanation = books.delete_doc(filter)->explain();
+  ASSERT_EQ("delete(books)\n\tfilter(author=\"dan brown\")\n\tscan(books)", explanation);
+}

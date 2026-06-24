@@ -54,7 +54,7 @@ export struct find_statement : public statement
 private:
   auto build_plan() -> logical_plan
   {
-    logical_plan plan = scan{.collection = this->collection_};
+    logical_plan plan = scan{.collection = collection_};
 
     if (query_.filter.has_value())
     {
@@ -72,12 +72,69 @@ private:
 
       plan = projection{.fields = std::move(fields), .child = std::make_unique<logical_plan>(std::move(plan))};
     }
-
     return plan;
   }
 
   std::string collection_;
   query query_;
+  explainer explainer_;
+  predicate_parser parse_;
+};
+
+export struct update_statement : public statement
+{
+  update_statement(const std::string &name, const json &query, const json &data)
+      : collection_(name), query_(query), data_(data)
+  {
+  }
+
+  auto explain() -> std::string override
+  {
+    auto plan = build_plan();
+    auto explanation = std::visit(explainer_, plan);
+    return std::format("update({})\n\t{}", collection_, explanation);
+  }
+
+  auto execute() -> void override { throw std::runtime_error("not implemented"); }
+
+private:
+  auto build_plan() -> logical_plan
+  {
+    logical_plan plan = scan{.collection = collection_};
+    plan = selection{.child = std::make_unique<logical_plan>(std::move(plan)), .predicate = parse_(query_)};
+    return plan;
+  }
+
+  std::string collection_;
+  json query_;
+  json data_;
+  explainer explainer_;
+  predicate_parser parse_;
+};
+
+export struct delete_statement : public statement
+{
+  delete_statement(const std::string &name, const json &query) : collection_(name), query_(query) {}
+
+  auto explain() -> std::string override
+  {
+    auto plan = build_plan();
+    auto explanation = std::visit(explainer_, plan);
+    return std::format("delete({})\n\t{}", collection_, explanation);
+  }
+
+  auto execute() -> void override { throw std::runtime_error("not implemented"); }
+
+private:
+  auto build_plan() -> logical_plan
+  {
+    logical_plan plan = scan{.collection = collection_};
+    plan = selection{.child = std::make_unique<logical_plan>(std::move(plan)), .predicate = parse_(query_)};
+    return plan;
+  }
+
+  std::string collection_;
+  json query_;
   explainer explainer_;
   predicate_parser parse_;
 };

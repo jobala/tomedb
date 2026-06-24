@@ -14,12 +14,22 @@ struct collection
 
   auto insert(tome::document &doc) -> std::unique_ptr<tome::statement>
   {
-    return std::make_unique<tome::insert_statement>(this->name_, doc);
+    return std::make_unique<tome::insert_statement>(name_, doc);
   }
 
   auto find(const query &query) -> std::unique_ptr<tome::statement>
   {
-    return std::make_unique<tome::find_statement>(this->name_, query);
+    return std::make_unique<tome::find_statement>(name_, query);
+  }
+
+  auto update(const json &query, const json &data) -> std::unique_ptr<tome::statement>
+  {
+    return std::make_unique<tome::update_statement>(name_, query, data);
+  }
+
+  auto delete_doc(const json &query) -> std::unique_ptr<tome::statement>
+  {
+    return std::make_unique<tome::delete_statement>(name_, query);
   }
 
 private:
