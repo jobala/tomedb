@@ -36,13 +36,14 @@ if(ENABLE_TSAN)
   add_link_options(-fsanitize=thread)
 endif()
 
+
+include(add_json)
+include(add_rocksdb)
+enable_testing()
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
   add_compile_options(-Wall -Wextra -Wpedantic -Werror -Wno-missing-field-initializers)
 endif()
-
-include(add_json)
-enable_testing()
-
 
 add_subdirectory(lib/types)
 add_subdirectory(lib/query_processor)

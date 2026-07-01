@@ -5,7 +5,7 @@ import types;
 
 TEST(query_processing, insert_query)
 {
-  tome::db library{};
+  tome::db library{"library"};
   tome::document book = {{"author", "ngugi wa thiong'o"}};
 
   auto books = library.collection("books");
@@ -17,7 +17,7 @@ TEST(query_processing, insert_query)
 
 TEST(query_processing, find_query)
 {
-  tome::db library{};
+  tome::db library{"library"};
   tome::document book = {{"author", "dan brown"}, {"title", "inferno"}, {"age", 10}};
   auto books = library.collection("books");
   std::string explanation;
@@ -53,7 +53,7 @@ TEST(query_processing, find_query)
 
 TEST(query_processing, update_query)
 {
-  tome::db library{};
+  tome::db library{"library"};
   tome::document book = {{"author", "dan brown"}, {"title", "inferno"}, {"age", 10}};
   auto books = library.collection("books");
 
@@ -66,7 +66,7 @@ TEST(query_processing, update_query)
 
 TEST(query_processing, delete_query)
 {
-  tome::db library{};
+  tome::db library{"library"};
   tome::document book = {{"author", "dan brown"}, {"title", "inferno"}, {"age", 10}};
   auto books = library.collection("books");
 

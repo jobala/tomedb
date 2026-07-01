@@ -14,7 +14,6 @@ import types;
 
 namespace tome
 {
-
 struct binary_expr;
 struct logical_expr;
 struct field_expr;
