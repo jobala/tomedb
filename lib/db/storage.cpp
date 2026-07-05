@@ -1,12 +1,13 @@
 module;
 
 #include "rocksdb/status.h"
+#include <expected>
 #include <memory>
-#include <optional>
 #include <rocksdb/db.h>
 #include <rocksdb/options.h>
 #include <rocksdb/slice.h>
 #include <stdexcept>
+#include <string>
 #include <string_view>
 
 export module db:storage;
@@ -27,40 +28,44 @@ struct storage
     }
   }
 
-  auto put(std::string_view key, std::string_view value) -> void
+  auto put(std::string_view key, std::string_view value) -> std::expected<std::string, std::runtime_error>
   {
     auto status = db_->Put(write_options_, key, value);
     if (!status.ok())
     {
-      throw std::runtime_error(status.ToString());
+      return std::unexpected(std::runtime_error(status.ToString()));
     }
+
+    return static_cast<std::string>(key);
   }
 
-  auto get(std::string_view key) -> std::optional<std::string>
+  auto get(std::string_view key) -> std::expected<std::string, std::runtime_error>
   {
     std::string value;
     auto status = db_->Get(read_options_, key, &value);
 
     if (status.IsNotFound())
     {
-      return std::nullopt;
+      return std::unexpected(std::runtime_error("key not found"));
     }
 
     if (!status.ok())
     {
-      throw std::runtime_error(status.ToString());
+      return std::unexpected(std::runtime_error(status.ToString()));
     }
 
     return value;
   }
 
-  auto erase(std::string_view key) -> void
+  auto erase(std::string_view key) -> std::expected<std::string, std::runtime_error>
   {
     auto status = db_->Delete(write_options_, key);
     if (!status.ok())
     {
-      throw std::runtime_error(status.ToString());
+      return std::unexpected(std::runtime_error(status.ToString()));
     }
+
+    return static_cast<std::string>(key);
   }
 
 private:
