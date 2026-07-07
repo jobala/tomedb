@@ -23,20 +23,12 @@ export struct statement
   virtual ~statement() = default;
 };
 
-export struct insert_statement : public statement
+export struct insert_statement
 {
-  insert_statement(const std::string &collection, document &doc) : collection_(collection), document_(doc) {}
-
-  auto explain() -> std::string override
+  auto plan(const statement_repl &statement) -> logical_plan
   {
-    return std::format("collection({})\n\tdocument: {}", collection_, document_.dump());
+    return insert{.collection = statement.collection, .query = statement.query};
   }
-
-  auto execute() -> void override { throw std::runtime_error("not implemented"); }
-
-private:
-  std::string collection_;
-  json document_;
 };
 
 export struct find_statement : public statement

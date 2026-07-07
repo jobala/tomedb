@@ -15,4 +15,10 @@ struct query
   std::optional<document> filter;
   std::optional<json> projection;
 };
+
+struct statement_repl
+{
+  std::string collection;
+  json query;
+};
 }; // namespace tome
