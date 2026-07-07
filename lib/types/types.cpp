@@ -16,7 +16,7 @@ struct query
   std::optional<json> projection;
 };
 
-struct statement_repl
+struct statement
 {
   std::string collection;
   query query;

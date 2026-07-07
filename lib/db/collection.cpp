@@ -17,28 +17,28 @@ struct collection
 
   auto insert(const tome::document &doc) -> collection *
   {
-    statement_repl statement{.collection = name_, .doc = doc};
+    statement statement{.collection = name_, .doc = doc};
     plan_ = planner_.plan<insert_statement>(statement);
     return this;
   }
 
   auto find(const query &query) -> collection *
   {
-    statement_repl statement{.collection = name_, .query = query};
+    statement statement{.collection = name_, .query = query};
     plan_ = planner_.plan<find_statement>(statement);
     return this;
   }
 
   auto update(const json &filter, const json &data) -> collection *
   {
-    statement_repl statement{.collection = name_, .filter = filter, .data = data};
+    statement statement{.collection = name_, .filter = filter, .data = data};
     plan_ = planner_.plan<update_statement>(statement);
     return this;
   }
 
   auto delete_one(const json &filter) -> collection *
   {
-    statement_repl statement{.collection = name_, .filter = filter};
+    statement statement{.collection = name_, .filter = filter};
     plan_ = planner_.plan<delete_statement>(statement);
     return this;
   }

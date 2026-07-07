@@ -1,11 +1,8 @@
 module;
 
-#include <format>
 #include <memory>
-#include <stdexcept>
 #include <string>
 #include <utility>
-#include <variant>
 
 export module query_processor:planner;
 
@@ -18,24 +15,17 @@ namespace tome
 export struct planner
 {
   template <typename T>
-  auto plan(const statement_repl &statement) -> logical_plan
+  auto plan(const statement &statement) -> logical_plan
   {
     T t{};
     return t.plan(statement);
   }
 };
 
-export struct statement
-{
-  virtual std::string explain() = 0;
-  virtual void execute() = 0;
-  virtual ~statement() = default;
-};
-
 export struct insert_statement
 {
   [[nodiscard]]
-  auto plan(const statement_repl &statement) const -> logical_plan
+  auto plan(const statement &statement) const -> logical_plan
   {
     return insert{.collection = statement.collection, .doc = statement.doc};
   }
@@ -44,7 +34,7 @@ export struct insert_statement
 export struct find_statement
 {
   [[nodiscard]]
-  auto plan(const statement_repl &statement) const -> logical_plan
+  auto plan(const statement &statement) const -> logical_plan
   {
     logical_plan plan = scan{.collection = statement.collection};
 
@@ -73,7 +63,7 @@ export struct find_statement
 
 export struct update_statement
 {
-  auto plan(const statement_repl &statement) const -> logical_plan
+  auto plan(const statement &statement) const -> logical_plan
   {
     logical_plan plan = scan{.collection = statement.collection};
     plan = selection{.child = std::make_unique<logical_plan>(std::move(plan)), .predicate = parse_(statement.filter)};
@@ -86,7 +76,7 @@ export struct update_statement
 export struct delete_statement
 {
 
-  auto plan(const statement_repl &statement) const -> logical_plan
+  auto plan(const statement &statement) const -> logical_plan
   {
     logical_plan plan = scan{.collection = statement.collection};
     plan = selection{.child = std::make_unique<logical_plan>(std::move(plan)), .predicate = parse_(statement.filter)};
