@@ -64,14 +64,14 @@ TEST(query_processing, update_query)
   ASSERT_EQ("filter(author=\"dan brown\")\n\tscan(books)", explanation);
 }
 
-// TEST(query_processing, delete_query)
-// {
-//   tome::db library{"library"};
-//   tome::document book = {{"author", "dan brown"}, {"title", "inferno"}, {"age", 10}};
-//   auto books = library.collection("books");
-//
-//   tome::json filter{{"author", "dan brown"}};
-//
-//   auto explanation = books.delete_doc(filter)->explain();
-//   ASSERT_EQ("delete(books)\n\tfilter(author=\"dan brown\")\n\tscan(books)", explanation);
-// }
+TEST(query_processing, delete_query)
+{
+  tome::db library{"library"};
+  tome::document book = {{"author", "dan brown"}, {"title", "inferno"}, {"age", 10}};
+  auto books = library.collection("books");
+
+  tome::json filter{{"author", "dan brown"}};
+
+  auto explanation = books.delete_one(filter)->explain();
+  ASSERT_EQ("filter(author=\"dan brown\")\n\tscan(books)", explanation);
+}

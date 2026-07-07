@@ -35,10 +35,13 @@ struct collection
     plan_ = planner_.plan<update_statement>(statement);
     return this;
   }
-  // auto delete_doc(const json &query) -> std::unique_ptr<tome::statement>
-  // {
-  //   return std::make_unique<tome::delete_statement>(name_, query);
-  // }
+
+  auto delete_one(const json &filter) -> collection *
+  {
+    statement_repl statement{.collection = name_, .filter = filter};
+    plan_ = planner_.plan<delete_statement>(statement);
+    return this;
+  }
 
   auto explain() -> std::string { return std::visit(explainer_, plan_); }
 

@@ -83,30 +83,16 @@ export struct update_statement
   predicate_parser parse_{};
 };
 
-export struct delete_statement : public statement
+export struct delete_statement
 {
-  delete_statement(const std::string &name, const json &query) : collection_(name), query_(query) {}
 
-  auto explain() -> std::string override
+  auto plan(const statement_repl &statement) const -> logical_plan
   {
-    auto plan = build_plan();
-    auto explanation = std::visit(explainer_, plan);
-    return std::format("delete({})\n\t{}", collection_, explanation);
-  }
-
-  auto execute() -> void override { throw std::runtime_error("not implemented"); }
-
-private:
-  auto build_plan() -> logical_plan
-  {
-    logical_plan plan = scan{.collection = collection_};
-    plan = selection{.child = std::make_unique<logical_plan>(std::move(plan)), .predicate = parse_(query_)};
+    logical_plan plan = scan{.collection = statement.collection};
+    plan = selection{.child = std::make_unique<logical_plan>(std::move(plan)), .predicate = parse_(statement.filter)};
     return plan;
   }
 
-  std::string collection_;
-  json query_;
-  explainer explainer_;
   predicate_parser parse_;
 };
 } // namespace tome
