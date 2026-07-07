@@ -6,9 +6,8 @@ target_link_libraries(query_processor PRIVATE types)
 target_sources(query_processor
 PUBLIC
 FILE_SET CXX_MODULES FILES
-statement.cpp
+planner.cpp
 query_processor.cpp
 logical_plan.cpp
-planner.cpp
 expr.cpp
 )
