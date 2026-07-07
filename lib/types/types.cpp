@@ -19,6 +19,9 @@ struct query
 struct statement_repl
 {
   std::string collection;
-  json query;
+  query query;
+  json filter;
+  json doc;
+  json data;
 };
 }; // namespace tome

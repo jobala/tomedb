@@ -17,22 +17,24 @@ struct collection
 
   auto insert(const tome::document &doc) -> collection *
   {
-    statement_repl statement{.collection = name_, .query = doc};
+    statement_repl statement{.collection = name_, .doc = doc};
     plan_ = planner_.plan<insert_statement>(statement);
     return this;
   }
 
-  //
-  // auto find(const query &query) -> std::unique_ptr<tome::statement>
-  // {
-  //   return std::make_unique<tome::find_statement>(name_, query);
-  // }
-  //
-  // auto update(const json &query, const json &data) -> std::unique_ptr<tome::statement>
-  // {
-  //   return std::make_unique<tome::update_statement>(name_, query, data);
-  // }
-  //
+  auto find(const query &query) -> collection *
+  {
+    statement_repl statement{.collection = name_, .query = query};
+    plan_ = planner_.plan<find_statement>(statement);
+    return this;
+  }
+
+  auto update(const json &filter, const json &data) -> collection *
+  {
+    statement_repl statement{.collection = name_, .filter = filter, .data = data};
+    plan_ = planner_.plan<update_statement>(statement);
+    return this;
+  }
   // auto delete_doc(const json &query) -> std::unique_ptr<tome::statement>
   // {
   //   return std::make_unique<tome::delete_statement>(name_, query);

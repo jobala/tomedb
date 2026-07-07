@@ -20,7 +20,7 @@ export using logical_plan = std::variant<scan, selection, projection, insert>;
 struct insert
 {
   std::string collection;
-  json query;
+  json doc;
 };
 
 struct scan
@@ -46,7 +46,7 @@ export struct explainer
 
   auto operator()(const insert &insert) const -> std::string
   {
-    return std::format("collection({})\n\tdocument: {}", insert.collection, insert.query.dump());
+    return std::format("collection({})\n\tdocument: {}", insert.collection, insert.doc.dump());
   }
 
   auto operator()(const selection &selection) const -> std::string
