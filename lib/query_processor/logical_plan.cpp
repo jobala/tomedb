@@ -1,5 +1,6 @@
 module;
 #include <format>
+#include <iostream>
 #include <memory>
 #include <string>
 #include <variant>
@@ -30,6 +31,12 @@ struct scan
 
 struct selection
 {
+  bool evaluate(const json &doc) const
+  {
+    std::cout << doc.dump();
+    return false;
+  }
+
   std::unique_ptr<logical_plan> child;
   expr predicate;
 };

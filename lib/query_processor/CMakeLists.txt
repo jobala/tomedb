@@ -9,5 +9,6 @@ FILE_SET CXX_MODULES FILES
 planner.cpp
 query_processor.cpp
 logical_plan.cpp
+query_executor.cpp
 expr.cpp
 )

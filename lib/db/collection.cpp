@@ -2,6 +2,7 @@ module;
 
 #include <string>
 #include <variant>
+#include <vector>
 
 export module db:collection;
 export import query_processor;
@@ -45,7 +46,22 @@ struct collection
 
   auto explain() -> std::string { return std::visit(explainer_, plan_); }
 
-  auto execute() -> void { store_.put("hello", "world"); }
+  auto execute() -> std::vector<result>
+  {
+    std::vector<result> res{};
+    auto [next, record] = std::visit(executor_, plan_);
+    res.push_back(record);
+
+    while (next)
+    {
+      auto out = std::visit(executor_, plan_);
+      next = out.first;
+
+      res.push_back(out.second);
+    }
+
+    return res;
+  }
 
 private:
   std::string name_;
@@ -54,5 +70,6 @@ private:
   storage &store_;
   planner planner_{};
   explainer explainer_{};
+  executor executor_{};
 };
 } // namespace tome
