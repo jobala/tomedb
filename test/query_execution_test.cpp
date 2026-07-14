@@ -9,7 +9,7 @@ TEST(query_execution, insert)
   auto books = library.collection("books");
 
   tome::document book = {{"author", "dan brown"}, {"title", "inferno"}, {"age", 10}};
-  books.insert(book);
+  books.insert(book)->execute();
 }
 
 TEST(query_execution, find) {}

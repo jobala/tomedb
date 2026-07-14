@@ -6,7 +6,7 @@ module;
 
 export module query_processor:planner;
 
-export import types;
+import types;
 import :logical_plan;
 import :expr;
 
@@ -63,6 +63,7 @@ export struct find_statement
 
 export struct update_statement
 {
+  [[nodiscard]]
   auto plan(const statement &statement) const -> logical_plan
   {
     logical_plan plan = scan{.collection = statement.collection};
@@ -76,6 +77,7 @@ export struct update_statement
 export struct delete_statement
 {
 
+  [[nodiscard]]
   auto plan(const statement &statement) const -> logical_plan
   {
     logical_plan plan = scan{.collection = statement.collection};
