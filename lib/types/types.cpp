@@ -24,4 +24,11 @@ struct statement
   json doc;
   json data;
 };
+
+template <typename T>
+concept store = requires(T t) {
+  t.put(std::string_view{}, std::string_view{});
+  t.get(std::string_view{});
+  t.erase(std::string_view{});
+};
 }; // namespace tome

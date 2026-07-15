@@ -1,9 +1,7 @@
 module;
-
 #include <string>
 #include <variant>
 #include <vector>
-
 export module db:collection;
 export import query_processor;
 
@@ -14,7 +12,7 @@ namespace tome
 {
 struct collection
 {
-  collection(const std::string &name, storage &store) : name_(name), store_(store) {}
+  collection(const std::string &name, storage &store) : name_(name), executor_(executor{store}) {}
 
   auto insert(const tome::document &doc) -> collection *
   {
@@ -67,9 +65,8 @@ private:
   std::string name_;
   std::string op_;
   logical_plan plan_;
-  storage &store_;
   planner planner_{};
   explainer explainer_{};
-  executor executor_{};
+  executor<storage> executor_;
 };
 } // namespace tome

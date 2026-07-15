@@ -13,11 +13,15 @@ export struct result
 {
 };
 
-export struct executor
+export template <store T>
+struct executor
 {
+
+  executor(T &store) : storage_(store) {}
+
   std::pair<bool, result> operator()(const insert &plan)
   {
-    std::cout << plan.collection;
+    storage_.put("hello", plan.doc.dump());
     return std::make_pair(false, result{});
   }
 
@@ -45,5 +49,8 @@ export struct executor
     std::cout << plan.collection;
     return std::make_pair(true, result{});
   }
+
+private:
+  T &storage_;
 };
 } // namespace tome
