@@ -7,4 +7,5 @@ target_sources(types
 PUBLIC
 FILE_SET CXX_MODULES FILES
 types.cpp
+uuid.cpp
 )

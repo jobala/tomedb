@@ -8,3 +8,4 @@ target_link_libraries(query_execution_test PRIVATE gtest GTest::gtest_main types
 
 include(GoogleTest)
 gtest_discover_tests(query_processing_test)
+gtest_discover_tests(query_execution_test)

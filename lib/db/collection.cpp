@@ -44,9 +44,9 @@ struct collection
 
   auto explain() -> std::string { return std::visit(explainer_, plan_); }
 
-  auto execute() -> std::vector<result>
+  auto execute() -> std::vector<std::string>
   {
-    std::vector<result> res{};
+    std::vector<std::string> res{};
     auto [next, record] = std::visit(executor_, plan_);
     res.push_back(record);
 

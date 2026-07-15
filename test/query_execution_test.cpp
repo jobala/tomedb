@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <iostream>
 
 import db;
 import types;
@@ -9,7 +10,12 @@ TEST(query_execution, insert)
   auto books = library.collection("books");
 
   tome::document book = {{"author", "dan brown"}, {"title", "inferno"}, {"age", 10}};
-  books.insert(book)->execute();
+  auto res = books.insert(book)->execute();
+
+  for (auto &x : res)
+  {
+    std::cout << "output: " << x << "\n";
+  }
 }
 
 TEST(query_execution, find) {}

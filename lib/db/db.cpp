@@ -1,7 +1,5 @@
 module;
-
 #include <string>
-
 export module db;
 
 export import :collection;
