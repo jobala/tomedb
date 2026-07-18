@@ -9,7 +9,6 @@ export module uuidv7;
 
 export namespace tome
 {
-
 using uuid_v7 = std::array<uint8_t, 16>;
 
 uuid_v7 generate_uuidv7()

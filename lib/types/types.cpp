@@ -31,5 +31,4 @@ concept store = requires(T t) {
   t.get(std::string_view{});
   t.erase(std::string_view{});
 };
-
 }; // namespace tome

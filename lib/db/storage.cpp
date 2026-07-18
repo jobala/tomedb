@@ -1,5 +1,4 @@
 module;
-
 #include "rocksdb/status.h"
 #include <expected>
 #include <memory>
@@ -9,7 +8,6 @@ module;
 #include <stdexcept>
 #include <string>
 #include <string_view>
-
 export module db:storage;
 
 namespace tome

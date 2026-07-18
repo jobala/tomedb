@@ -13,7 +13,6 @@ namespace tome
 export template <store T>
 struct executor
 {
-
   executor(T &store) : storage_(store) {}
 
   std::pair<bool, std::string> operator()(const insert &plan)
@@ -32,7 +31,6 @@ struct executor
   {
     auto res = std::visit(*this, *plan.child);
     std::cout << res.first;
-
     std::cout << plan.fields[0];
     return std::make_pair(true, "");
   }
