@@ -1,5 +1,4 @@
 module;
-
 #include <format>
 #include <memory>
 #include <stdexcept>
@@ -7,7 +6,6 @@ module;
 #include <unordered_map>
 #include <utility>
 #include <variant>
-
 export module query_processor:expr;
 
 import types;

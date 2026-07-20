@@ -1,9 +1,7 @@
 module;
-
 #include <memory>
 #include <string>
 #include <utility>
-
 export module query_processor:planner;
 
 import types;

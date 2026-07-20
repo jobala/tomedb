@@ -11,11 +11,7 @@ TEST(query_execution, insert)
 
   tome::document book = {{"author", "dan brown"}, {"title", "inferno"}, {"age", 10}};
   auto res = books.insert(book)->execute();
-
-  for (auto &x : res)
-  {
-    std::cout << "output: " << x << "\n";
-  }
+  std::cout << "output: " << res.dump() << "\n";
 }
 
 TEST(query_execution, find) {}

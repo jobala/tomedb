@@ -7,9 +7,17 @@ export import query_processor;
 
 import :storage;
 import types;
+import result_types;
 
 namespace tome
 {
+
+template <class... Ts>
+struct overloaded : Ts...
+{
+  using Ts::operator()...;
+};
+
 struct collection
 {
   collection(const std::string &name, storage &store) : name_(name), executor_(executor{store}) {}
@@ -44,21 +52,20 @@ struct collection
 
   auto explain() -> std::string { return std::visit(explainer_, plan_); }
 
-  auto execute() -> std::vector<std::string>
+  auto execute() -> json
   {
-    std::vector<std::string> res{};
     auto [next, record] = std::visit(executor_, plan_);
-    res.push_back(record);
 
-    while (next)
-    {
-      auto out = std::visit(executor_, plan_);
-      next = out.first;
-
-      res.push_back(out.second);
-    }
-
-    return res;
+    return std::visit(
+        overloaded{
+            [](const insert_result &insert_res) { return json{{"id", insert_res.inserted_id}}; },
+            [](const update_result &update_res) {
+              return json{{"matched_count", update_res.matched_count}, {"modified_count", update_res.modified_count}};
+            },
+            [](const delete_result &delete_res) { return json{{"deleted_count", delete_res.deleted_count}}; },
+            [](const get_result &get_res) { return get_res.doc; },
+        },
+        record);
   }
 
 private:

@@ -7,6 +7,7 @@ export module query_processor:executor;
 import :logical_plan;
 import types;
 import uuidv7;
+import result_types;
 
 namespace tome
 {
@@ -15,7 +16,7 @@ struct executor
 {
   executor(T &store) : storage_(store) {}
 
-  std::pair<bool, std::string> operator()(const insert &plan)
+  std::pair<bool, result> operator()(const insert &plan)
   {
     auto doc = plan.doc;
     auto id = to_string(generate_uuidv7());
@@ -24,31 +25,31 @@ struct executor
     doc.insert(primary_key.begin(), primary_key.end());
     auto res = storage_.put(id, doc.dump());
 
-    return std::make_pair(false, res.value());
+    return std::make_pair(false, insert_result{.inserted_id = id});
   }
 
-  std::pair<bool, std::string> operator()(const projection &plan)
+  std::pair<bool, result> operator()(const projection &plan)
   {
     auto res = std::visit(*this, *plan.child);
     std::cout << res.first;
     std::cout << plan.fields[0];
-    return std::make_pair(true, "");
+    return std::make_pair(true, get_result{});
   }
 
-  std::pair<bool, std::string> operator()(const selection &plan)
+  std::pair<bool, result> operator()(const selection &plan)
   {
     auto res = std::visit(*this, *plan.child);
     std::cout << res.first;
 
     json doc{};
     plan.evaluate(doc);
-    return std::make_pair(true, "");
+    return std::make_pair(true, get_result{});
   }
 
-  std::pair<bool, std::string> operator()(const scan &plan)
+  std::pair<bool, result> operator()(const scan &plan)
   {
     std::cout << plan.collection;
-    return std::make_pair(true, "");
+    return std::make_pair(true, get_result{});
   }
 
 private:
