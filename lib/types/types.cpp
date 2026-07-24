@@ -31,4 +31,10 @@ concept store = requires(T t) {
   t.get(std::string_view{});
   t.erase(std::string_view{});
 };
+
+template <class... Ts>
+struct overloaded : Ts...
+{
+  using Ts::operator()...;
+};
 }; // namespace tome

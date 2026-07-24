@@ -1,7 +1,6 @@
 module;
 #include <string>
 #include <variant>
-#include <vector>
 export module db:collection;
 export import query_processor;
 
@@ -11,13 +10,6 @@ import result_types;
 
 namespace tome
 {
-
-template <class... Ts>
-struct overloaded : Ts...
-{
-  using Ts::operator()...;
-};
-
 struct collection
 {
   collection(const std::string &name, storage &store) : name_(name), executor_(executor{store}) {}
@@ -56,16 +48,25 @@ struct collection
   {
     auto [next, record] = std::visit(executor_, plan_);
 
-    return std::visit(
-        overloaded{
-            [](const insert_result &insert_res) { return json{{"id", insert_res.inserted_id}}; },
-            [](const update_result &update_res) {
-              return json{{"matched_count", update_res.matched_count}, {"modified_count", update_res.modified_count}};
-            },
-            [](const delete_result &delete_res) { return json{{"deleted_count", delete_res.deleted_count}}; },
-            [](const get_result &get_res) { return get_res.doc; },
-        },
-        record);
+    return std::visit(overloaded{
+                          [](const insert_result &res) { return json{{"id", res.inserted_id}}; },
+                          [](const update_result &res) {
+                            return json{{"matched_count", res.matched_count}, {"modified_count", res.modified_count}};
+                          },
+                          [](const delete_result &res) { return json{{"deleted_count", res.deleted_count}}; },
+                          [next, this](const get_result &res) {
+                            auto records = json::array();
+                            records.push_back(res.doc);
+
+                            while (next)
+                            {
+                              execute();
+                            }
+
+                            return records;
+                          },
+                      },
+                      record);
   }
 
 private:
