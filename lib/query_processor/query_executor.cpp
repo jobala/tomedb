@@ -12,32 +12,6 @@ import result_types;
 
 namespace tome
 {
-// struct expr_evaluator
-// {
-//   bool evaluate(expr predicate, const json &doc) const
-//   {
-//     return std::visit(overloaded{[&filter](const &literal) {
-//                                    // doesn't make sense to have this, there's nothing to compare a literal to
-//                                    return false;
-//                                  },
-//                                  [&filter](const &field_expr) {
-//                                    // this is the base case, handle nested properties?
-//                                    // return false if doc, doesn't have field
-//                                    // literal should also include value
-//                                    return false;
-//                                  },
-//                                  [&filter](const &logical_expr) {
-//                                    // apply logical operation on all children
-//                                    return false;
-//                                  },
-//                                  [&filter](const &binary_expr) {
-//                                    // left and right should be true
-//                                    return false;
-//                                  }},
-//                       predicate);
-//   } // namespace tome
-// };
-
 export template <store T>
 struct executor
 {
@@ -80,6 +54,58 @@ struct executor
   }
 
 private:
+  [[nodiscard]]
+  bool evaluate(const expr &predicate, const json &doc) const
+  {
+    return std::visit(overloaded{[&](const logical_expr &e) -> bool {
+                                   if (e.op == expr_op::OR)
+                                   {
+                                     for (const auto &child : e.children)
+                                     {
+                                       if (evaluate(*child, doc))
+                                       {
+                                         return true;
+                                       }
+                                     }
+                                     return false;
+                                   }
+                                   for (const auto &child : e.children)
+                                   {
+                                     if (!evaluate(*child, doc))
+                                     {
+                                       return false;
+                                     }
+                                   }
+                                   return true;
+                                 },
+                                 [&](const binary_expr &e) -> bool {
+                                   const auto it = doc.find(e.left);
+                                   if (it == doc.end())
+                                   {
+                                     return false;
+                                   }
+                                   const json &value = *it;
+                                   switch (e.op)
+                                   {
+                                   case expr_op::EQ:
+                                     return value == e.right;
+                                   case expr_op::NE:
+                                     return value != e.right;
+                                   case expr_op::GT:
+                                     return value > e.right;
+                                   case expr_op::LT:
+                                     return value < e.right;
+                                   case expr_op::GTE:
+                                     return value >= e.right;
+                                   case expr_op::LTE:
+                                     return value <= e.right;
+                                   default:
+                                     return false; // AND/OR are not leaf ops
+                                   }
+                                 }},
+                      predicate);
+  }
+
   T &storage_;
 };
 } // namespace tome
