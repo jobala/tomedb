@@ -1,5 +1,6 @@
 module;
 
+#include <cstdint>
 #include <nlohmann/json.hpp>
 #include <unordered_map>
 
@@ -24,6 +25,8 @@ struct statement
   json doc;
   json data;
 };
+
+enum class operators : std::int8_t { EQ, NE, GT, LT, AND, OR, GTE, LTE };
 
 template <typename T>
 concept store = requires(T t) {

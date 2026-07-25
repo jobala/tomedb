@@ -5,12 +5,39 @@ module;
 export module query_processor:executor;
 
 import :logical_plan;
+import :expr;
 import types;
 import uuidv7;
 import result_types;
 
 namespace tome
 {
+// struct expr_evaluator
+// {
+//   bool evaluate(expr predicate, const json &doc) const
+//   {
+//     return std::visit(overloaded{[&filter](const &literal) {
+//                                    // doesn't make sense to have this, there's nothing to compare a literal to
+//                                    return false;
+//                                  },
+//                                  [&filter](const &field_expr) {
+//                                    // this is the base case, handle nested properties?
+//                                    // return false if doc, doesn't have field
+//                                    // literal should also include value
+//                                    return false;
+//                                  },
+//                                  [&filter](const &logical_expr) {
+//                                    // apply logical operation on all children
+//                                    return false;
+//                                  },
+//                                  [&filter](const &binary_expr) {
+//                                    // left and right should be true
+//                                    return false;
+//                                  }},
+//                       predicate);
+//   } // namespace tome
+// };
+
 export template <store T>
 struct executor
 {
@@ -40,9 +67,9 @@ struct executor
   {
     auto res = std::visit(*this, *plan.child);
     std::cout << res.first;
-
-    json doc{};
-    plan.evaluate(doc);
+    //
+    // json doc{};
+    // plan.evaluate(doc);
     return std::make_pair(true, get_result{});
   }
 

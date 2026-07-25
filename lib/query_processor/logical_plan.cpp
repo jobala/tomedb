@@ -1,6 +1,5 @@
 module;
 #include <format>
-#include <iostream>
 #include <memory>
 #include <string>
 #include <variant>
@@ -8,6 +7,7 @@ module;
 export module query_processor:logical_plan;
 
 import :expr;
+import types;
 
 namespace tome
 {
@@ -31,8 +31,6 @@ struct scan
 
 struct selection
 {
-  bool evaluate(const json &filter) const { return predicate.evaluate(filter); }
-
   std::unique_ptr<logical_plan> child;
   expr predicate;
 };
