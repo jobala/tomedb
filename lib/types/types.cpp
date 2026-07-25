@@ -26,7 +26,7 @@ struct statement
   json data;
 };
 
-enum class operators : std::int8_t { EQ, NE, GT, LT, AND, OR, GTE, LTE };
+enum class expr_op : std::int8_t { EQ, NE, GT, LT, AND, OR, GTE, LTE };
 
 template <typename T>
 concept store = requires(T t) {

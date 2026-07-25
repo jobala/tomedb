@@ -23,14 +23,14 @@ export using literal = std::variant<int, std::string>;
 
 struct binary_expr
 {
-  operators op;
+  expr_op op;
   std::string left;
   json right;
 };
 
 struct logical_expr
 {
-  operators op;
+  expr_op op;
   std::vector<std::unique_ptr<expr>> children;
 };
 
@@ -60,11 +60,11 @@ struct predicate_parser
       }
       return logical_expr{.op = op, .children = std::move(children)};
     }
-    return binary_expr{.op = operators::EQ, .left = key, .right = value};
+    return binary_expr{.op = expr_op::EQ, .left = key, .right = value};
   }
 
 private:
-  std::expected<operators, std::string> get_operator(const std::string &op) const
+  std::expected<expr_op, std::string> get_operator(const std::string &op) const
   {
     auto iter = symbol_map.find(op);
     if (iter != symbol_map.end())
@@ -75,9 +75,9 @@ private:
     return std::unexpected("operator not found");
   }
 
-  std::unordered_map<std::string, operators> symbol_map{
-      {"$eq", operators::EQ}, {"$ne", operators::NE},   {"$gt", operators::GT}, {"$gte", operators::GTE},
-      {"$lt", operators::LT}, {"$and", operators::AND}, {"$or", operators::OR}, {"$lte", operators::LTE},
+  std::unordered_map<std::string, expr_op> symbol_map{
+      {"$eq", expr_op::EQ}, {"$ne", expr_op::NE},   {"$gt", expr_op::GT}, {"$gte", expr_op::GTE},
+      {"$lt", expr_op::LT}, {"$and", expr_op::AND}, {"$or", expr_op::OR}, {"$lte", expr_op::LTE},
   };
 };
 
@@ -98,11 +98,11 @@ export struct expr_printer
   auto operator()(const logical_expr &logical_expr) const -> std::string
   {
     std::string op;
-    if (logical_expr.op == operators::AND)
+    if (logical_expr.op == expr_op::AND)
     {
       op = "and";
     }
-    else if (logical_expr.op == operators::OR)
+    else if (logical_expr.op == expr_op::OR)
     {
       op = "or";
     }
@@ -128,8 +128,7 @@ export struct expr_printer
   }
 
 private:
-  std::unordered_map<operators, std::string> symbol_map{{operators::EQ, "="}, {operators::NE, "!="},
-                                                        {operators::GT, ">"}, {operators::GTE, ">="},
-                                                        {operators::LT, "<"}, {operators::LTE, "<="}};
+  std::unordered_map<expr_op, std::string> symbol_map{{expr_op::EQ, "="},   {expr_op::NE, "!="}, {expr_op::GT, ">"},
+                                                      {expr_op::GTE, ">="}, {expr_op::LT, "<"},  {expr_op::LTE, "<="}};
 };
 } // namespace tome
