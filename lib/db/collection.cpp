@@ -47,26 +47,7 @@ struct collection
   auto execute() -> json
   {
     auto [next, record] = std::visit(executor_, plan_);
-
-    return std::visit(overloaded{
-                          [](const insert_result &res) { return json{{"id", res.inserted_id}}; },
-                          [](const update_result &res) {
-                            return json{{"matched_count", res.matched_count}, {"modified_count", res.modified_count}};
-                          },
-                          [](const delete_result &res) { return json{{"deleted_count", res.deleted_count}}; },
-                          [next, this](const get_result &res) {
-                            auto records = json::array();
-                            records.push_back(res.doc);
-
-                            while (next)
-                            {
-                              execute();
-                            }
-
-                            return records;
-                          },
-                      },
-                      record);
+    return record;
   }
 
 private:

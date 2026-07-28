@@ -33,6 +33,8 @@ concept store = requires(T t) {
   t.put(std::string_view{}, std::string_view{});
   t.get(std::string_view{});
   t.erase(std::string_view{});
+  t.next(std::string{});
+  t.reset(std::string{});
 };
 
 template <class... Ts>
