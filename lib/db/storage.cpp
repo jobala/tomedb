@@ -1,6 +1,7 @@
 module;
 #include "rocksdb/iterator.h"
 #include "rocksdb/status.h"
+#include <cstdint>
 #include <expected>
 #include <memory>
 #include <rocksdb/db.h>
@@ -11,6 +12,7 @@ module;
 #include <string_view>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 export module db:storage;
 
 namespace tome
@@ -29,9 +31,13 @@ struct storage
     }
   }
 
-  auto put(std::string_view key, std::string_view value) -> std::expected<std::string, std::runtime_error>
+  auto put(std::string_view key, const std::vector<std::uint8_t> &value)
+      -> std::expected<std::string, std::runtime_error>
   {
-    auto status = db_->Put(write_options_, key, value);
+    rocksdb::Slice value_slice(reinterpret_cast<const char *>(value.data()), value.size());
+    rocksdb::Slice key_slice(key.data(), key.size());
+
+    auto status = db_->Put(write_options_, key_slice, value_slice);
     if (!status.ok())
     {
       return std::unexpected(std::runtime_error(status.ToString()));
@@ -40,7 +46,7 @@ struct storage
     return static_cast<std::string>(key);
   }
 
-  auto get(std::string_view key) -> std::expected<std::string, std::runtime_error>
+  auto get(std::string_view key) -> std::expected<std::vector<std::uint8_t>, std::runtime_error>
   {
     std::string value;
     auto status = db_->Get(read_options_, key, &value);
@@ -55,7 +61,7 @@ struct storage
       return std::unexpected(std::runtime_error(status.ToString()));
     }
 
-    return value;
+    return std::vector<std::uint8_t>(value.begin(), value.end());
   }
 
   auto erase(std::string_view key) -> std::expected<std::string, std::runtime_error>
@@ -69,7 +75,7 @@ struct storage
     return static_cast<std::string>(key);
   }
 
-  auto next(const std::string &prefix) -> std::expected<std::string, std::runtime_error>
+  auto next(const std::string &prefix) -> std::expected<std::vector<std::uint8_t>, std::runtime_error>
   {
     auto found = iters.find(prefix);
     if (found == iters.end())
@@ -77,18 +83,35 @@ struct storage
       read_options_.prefix_same_as_start = true;
       auto iter = std::unique_ptr<rocksdb::Iterator>(db_->NewIterator(read_options_));
       iter->Seek(rocksdb::Slice(prefix));
-      iters.insert({prefix, std::move(iter)});
+
+      // Save the inserted iterator directly to avoid secondary map lookups
+      auto [inserted_it, _] = iters.insert({prefix, std::move(iter)});
+      found = inserted_it;
     }
 
-    if (!iters[prefix]->Valid())
+    auto &iter = found->second;
+
+    // 1. Check if iterator reached DB end
+    if (!iter->Valid())
     {
-      return std::unexpected(std::runtime_error("invalid iterator"));
+      return std::unexpected(std::runtime_error("End of iterator"));
     }
 
-    auto res = iters[prefix]->value();
-    iters[prefix]->Next();
+    // 2. CHECK PREFIX BOUNDARY (Prevents reading adjacent non-BSON keys!)
+    if (!iter->key().starts_with(rocksdb::Slice(prefix)))
+    {
+      return std::unexpected(std::runtime_error("No more keys with prefix: " + prefix));
+    }
 
-    return res.ToString();
+    // 3. Extract the value slice into vector
+    rocksdb::Slice res = iter->value();
+    const auto *data_start = reinterpret_cast<const std::uint8_t *>(res.data());
+    std::vector<std::uint8_t> bytes(data_start, data_start + res.size());
+
+    // 4. Advance for the next call
+    iter->Next();
+
+    return bytes;
   }
 
   auto reset(const std::string &prefix) -> void { iters[prefix]->Reset(); }

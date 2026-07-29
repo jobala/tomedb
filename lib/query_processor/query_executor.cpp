@@ -1,10 +1,10 @@
 module;
-#include <expected>
+#include <cstdint>
 #include <iostream>
 #include <memory>
-#include <stdexcept>
 #include <utility>
 #include <variant>
+#include <vector>
 export module query_processor:executor;
 
 import :logical_plan;
@@ -27,8 +27,8 @@ struct executor
     auto id = to_string(generate_uuidv7());
     json primary_key{{"id_", id}};
 
-    doc.insert(primary_key.begin(), primary_key.end());
-    auto res = storage_.put(plan.collection + ":" + id, doc.dump());
+    doc["id_"] = id;
+    auto res = storage_.put(plan.collection + ":" + id, json::to_bson(doc));
 
     return std::make_pair(false, primary_key);
   }
@@ -44,23 +44,45 @@ struct executor
   std::pair<bool, json> operator()(const selection &plan)
   {
     auto res = std::visit(*this, *plan.child);
-    if (!evaluate(plan.predicate, res.second))
+    if (!res.first)
     {
-      return std::make_pair(true, nullptr);
+      return std::make_pair(false, res);
     }
 
-    return std::make_pair(true, res);
+    if (!evaluate(plan.predicate, res.second))
+    {
+      return std::make_pair(true, res.second);
+    }
+
+    return std::make_pair(true, res.second);
   }
 
   std::pair<bool, json> operator()(const scan &plan)
   {
     auto res = storage_.next(plan.collection);
-    if (res.has_value())
+    const auto &bytes = *res;
+
+    if (!res)
     {
-      return std::make_pair(true, json::from_bson(res.value()));
+      return std::make_pair(false, nullptr);
     }
 
-    return std::make_pair(false, nullptr);
+    if (bytes.empty())
+    {
+      return std::make_pair(false, nullptr);
+    }
+
+    try
+    {
+      json j;
+      j = json::from_bson(bytes);
+
+      return std::make_pair(true, j);
+    } catch (const json::parse_error &e)
+    {
+      std::cout << "Failed to parse document: " << e.what() << "\n";
+      return std::make_pair(false, nullptr);
+    }
   }
 
 private:

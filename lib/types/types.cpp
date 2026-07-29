@@ -3,6 +3,7 @@ module;
 #include <cstdint>
 #include <nlohmann/json.hpp>
 #include <unordered_map>
+#include <vector>
 
 export module types;
 
@@ -30,7 +31,7 @@ enum class expr_op : std::int8_t { EQ, NE, GT, LT, AND, OR, GTE, LTE };
 
 template <typename T>
 concept store = requires(T t) {
-  t.put(std::string_view{}, std::string_view{});
+  t.put(std::string_view{}, std::vector<std::uint8_t>{});
   t.get(std::string_view{});
   t.erase(std::string_view{});
   t.next(std::string{});
