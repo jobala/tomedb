@@ -9,7 +9,7 @@ TEST(query_execution, insert)
   tome::db library{"library"};
   auto books = library.collection("books");
 
-  auto res = books.insert(tome::document{{"author", "dan brown"}, {"title", "inferno"}, {"age", 10}})->execute();
+  auto res = books.insert(tome::document{{"author", "dan brown"}, {"title", "inferno"}, {"age", 20}})->execute();
   ASSERT_TRUE(!res.empty());
 }
 
@@ -19,6 +19,7 @@ TEST(query_execution, find)
   auto books = library.collection("books");
 
   auto res = books.insert(tome::document{{"author", "dan brown"}, {"title", "inferno"}, {"age", 10}})->execute();
+  books.insert(tome::document{{"author", "dan brown"}, {"title", "inferno"}, {"age", 20}})->execute();
   auto id = res["id_"].get<std::string>();
 
   auto book = books.find(tome::query{.filter = tome::document{{"id_", {{"$eq", id}}}}})->execute();

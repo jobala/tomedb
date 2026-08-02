@@ -1,5 +1,4 @@
 module;
-#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <utility>
@@ -18,7 +17,6 @@ namespace tome
 export template <store T>
 struct executor
 {
-
   executor(T &store) : storage_(store) {}
 
   std::pair<bool, json> operator()(const insert &plan)

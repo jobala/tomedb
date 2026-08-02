@@ -84,31 +84,26 @@ struct storage
       auto iter = std::unique_ptr<rocksdb::Iterator>(db_->NewIterator(read_options_));
       iter->Seek(rocksdb::Slice(prefix));
 
-      // Save the inserted iterator directly to avoid secondary map lookups
       auto [inserted_it, _] = iters.insert({prefix, std::move(iter)});
       found = inserted_it;
     }
 
     auto &iter = found->second;
 
-    // 1. Check if iterator reached DB end
     if (!iter->Valid())
     {
       return std::unexpected(std::runtime_error("End of iterator"));
     }
 
-    // 2. CHECK PREFIX BOUNDARY (Prevents reading adjacent non-BSON keys!)
     if (!iter->key().starts_with(rocksdb::Slice(prefix)))
     {
       return std::unexpected(std::runtime_error("No more keys with prefix: " + prefix));
     }
 
-    // 3. Extract the value slice into vector
     rocksdb::Slice res = iter->value();
     const auto *data_start = reinterpret_cast<const std::uint8_t *>(res.data());
     std::vector<std::uint8_t> bytes(data_start, data_start + res.size());
 
-    // 4. Advance for the next call
     iter->Next();
 
     return bytes;
