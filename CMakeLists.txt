@@ -46,7 +46,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
 endif()
 
 add_subdirectory(lib/types)
-add_subdirectory(lib/query_processor)
+add_subdirectory(lib/query_engine)
 add_subdirectory(lib/db)
 add_subdirectory(test)
 
