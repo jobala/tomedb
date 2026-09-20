@@ -25,5 +25,6 @@ TEST(query_execution, find)
   auto book = books.find(tome::query{.filter = tome::document{{"id_", {{"$eq", id}}}}})->execute();
   std::cout << "book: " << book.dump();
 }
+
 TEST(query_execution, update) {}
 TEST(query_execution, delete_one) {}

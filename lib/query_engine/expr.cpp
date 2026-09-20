@@ -7,6 +7,7 @@ module;
 #include <unordered_map>
 #include <utility>
 #include <variant>
+#include <vector>
 export module query_processor:expr;
 
 import types;
@@ -30,6 +31,7 @@ struct binary_expr
 
 struct logical_expr
 {
+
   expr_op op;
   std::vector<std::unique_ptr<expr>> children;
 };
